@@ -1,5 +1,6 @@
 import base64
-
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 import requests
 import os
 from dotenv import load_dotenv
@@ -14,6 +15,7 @@ HEADERS = {
 
 if GITHUB_TOKEN:
     HEADERS["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+
 
 
 def get_repo_tree(owner, repo, branch):
@@ -96,7 +98,7 @@ def fetch_repo_contents(repo_url):
 
     results = []
 
-    for file in prioritize_files(files)[:20]:  # LIMIT for now (important)
+    for file in prioritize_files(files)[:20]:
         content = get_file_content(owner, repo, file["path"])
 
         if content:
@@ -172,7 +174,6 @@ def summarize_chunks(processed_files):
         chunk_summaries = []
 
         for chunk in file["chunks"]:
-            # placeholder (LLM later)
             chunk_summaries.append(f"Summary of: {chunk[:100]}")
 
         file_summary = " ".join(chunk_summaries)
@@ -198,26 +199,6 @@ Focus on:
 - role in system
 """
 
-def build_question_prompt(repo_summary, signals, num_questions):
-    return f"""
-You are a senior software engineer conducting a deep technical interview.
-
-Repository Summary:
-{repo_summary}
-
-Detected System Signals:
-{signals}
-
-Generate {num_questions} deep interview questions and strong answers.
-
-Focus on:
-- architecture decisions
-- scalability challenges
-- tradeoffs (e.g. WebSockets vs polling)
-- real-world engineering issues
-
-Avoid generic questions.
-"""
 def build_repo_summary(file_summaries):
     combined = "\n".join(
         f"{f['path']}:\n{f['summary']}"
@@ -284,3 +265,86 @@ Format:
 Q1:
 A1:
 """
+embeddings = [
+    {
+        "chunk": "...",
+        "vector": [...]
+    }
+]
+
+def retrieve(query_vector, embeddings, top_k=5):
+    scores = []
+
+    for item in embeddings:
+        score = cosine_similarity(
+            [query_vector],
+            [item["vector"]]
+        )[0][0]
+
+        scores.append((score, item["chunk"]))
+
+    scores.sort(reverse=True)
+    return [chunk for _, chunk in scores[:top_k]]
+
+def build_embeddings(processed_files):
+    index = []
+
+    for file in processed_files:
+        for chunk in file["chunks"]:
+            vector = embed_text(chunk)
+
+            index.append({
+                "chunk": chunk,
+                "vector": vector,
+                "path": file["path"]
+            })
+
+    return index
+
+
+def generate_questions_from_repo(repo_url, num_questions=5):
+    # 1. Fetch
+    files = fetch_repo_contents(repo_url)
+
+    # 2. Process
+    processed = process_files(files)
+
+    # 3. Build embeddings
+    embedding_index = build_embeddings(processed)
+
+    # 4. Build query
+    query = build_retrieval_query()
+    query_vector = embed_text(query)
+
+    # 5. Retrieve relevant chunks
+    top_chunks = retrieve(query_vector, embedding_index, top_k=8)
+
+    # 6. Build context
+    context = "\n\n".join(top_chunks)
+
+    # 7. Build final prompt
+    prompt = f"""
+You are a senior software engineer conducting a deep technical interview.
+
+Analyze this code context:
+
+{context}
+
+Generate {num_questions} deep technical interview questions and answers.
+
+Focus on:
+- architecture
+- scalability
+- tradeoffs
+- real-world engineering challenges
+
+Format:
+Q1:
+A1:
+"""
+    return prompt
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+def embed_text(text):
+    return model.encode(text)
