@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+
+from github_client import fetch_repo_contents
 
 app = FastAPI()
 
@@ -15,8 +18,19 @@ def home():
 
 @app.post("/analyze")
 def analyze_repo(data: RepoRequest):
-    return {
-        "repo": data.repo_url,
-        "questions_requested": data.num_questions,
-        "status": "coming soon"
-    }
+    try:
+        files = fetch_repo_contents(data.repo_url)
+        return {
+            "files fetched": len(files),
+            "sample": files[:2],
+            "repo": data.repo_url,
+            "branch": data.repo_url.split("/")[-1],
+            "questions_requested": data.num_questions,
+            "status": "coming soon"
+        }
+    except Exception as e:
+        if "GitHub API error" in str(e):
+            raise HTTPException(status_code=404, detail="Repository not found or inaccessible")
+
+    # Catch-all for other errors (like connection issues)
+    raise HTTPException(status_code=500, detail=str(e))
