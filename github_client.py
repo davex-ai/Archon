@@ -224,13 +224,15 @@ def retrieve(query_vector, embeddings, top_k=5):
 
     scored = sorted(scored, key=lambda x: x[0], reverse=True)
 
-    return [item["chunk"] for _, item in scored[:top_k]]
+    return [item for _, item in scored[:top_k]]
 
 def build_embeddings(processed_files):
     index = []
 
     for file in processed_files:
-        for chunk in file["chunks"]:
+        filtered = filter_chunks(file["chunks"])
+
+        for chunk in filtered:
             vector = embed_text(chunk)
 
             index.append({
