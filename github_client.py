@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 
 from ai import call_llm
+from fake_ai import generate_mock_questions
 
 load_dotenv()
 
@@ -252,7 +253,7 @@ def format_context(chunks):
     ])
 
 
-def generate_questions_from_repo(repo_url, num_questions=5):
+def generatuestions_from_repo(repo_url, num_questions=5):
     # 1. Fetch
     files = fetch_repo_contents(repo_url)
 
@@ -292,7 +293,23 @@ Format:
 Q1:
 A1:
 """
-    return call_llm(prompt)
+    try:
+        result = call_llm(prompt)
+
+        return {
+            "mode": "llm",
+            "data": result
+        }
+
+    except Exception as e:
+        print("LLM failed, falling back to mock:", str(e))
+
+        mock = generate_mock_questions(top_chunks, num_questions)
+
+        return {
+            "mode": "mock",
+            "data": mock
+        }
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
