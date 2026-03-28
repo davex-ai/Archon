@@ -145,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774698059614</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="dead weights">
+      <option name="closed" value="true" />
+      <created>1774705852850</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1774705852850</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -158,6 +166,7 @@
     <MESSAGE value="sumirize" />
     <MESSAGE value="embedding" />
     <MESSAGE value="cache" />
-    <option name="LAST_COMMIT_MESSAGE" value="cache" />
+    <MESSAGE value="dead weights" />
+    <option name="LAST_COMMIT_MESSAGE" value="dead weights" />
   </component>
 </project>

@@ -170,10 +170,10 @@ def classify_file(path):
 def filter_chunks(chunks):
     return [
         c for c in chunks
-        if len(c.strip()) > 50 and "import" in c or "function" in c or "class" in c
+        if len(c.strip()) > 50 and (
+            "import" in c or "function" in c or "class" in c
+        )
     ]
-
-
 def build_retrieval_query():
     return """
 core architecture system design scalability performance
