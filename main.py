@@ -1,10 +1,18 @@
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 from github_client import  generate_questions_from_repo
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"], # Your Next.js frontend URL
+    allow_credentials=True,
+    allow_methods=["*"], # Allows POST, GET, etc.
+    allow_headers=["*"], # Allows Content-Type, Authorization, etc.
+)
 
 class RepoRequest(BaseModel):
     repo_url: str
