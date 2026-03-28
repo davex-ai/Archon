@@ -159,3 +159,10 @@ def summarize_chunks(processed_files):
         })
 
     return summaries
+def build_repo_summary(file_summaries):
+    combined = "\n".join(
+        f"{f['path']}:\n{f['summary']}"
+        for f in file_summaries
+    )
+
+    return combined[:10000]
