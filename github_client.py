@@ -5,6 +5,8 @@ import requests
 import os
 from dotenv import load_dotenv
 
+from ai import call_llm
+
 load_dotenv()
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -290,7 +292,7 @@ Format:
 Q1:
 A1:
 """
-    return prompt
+    return call_llm(prompt)
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 

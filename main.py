@@ -2,7 +2,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from github_client import fetch_repo_contents, generate_questions_from_repo
+from github_client import  generate_questions_from_repo
 
 app = FastAPI()
 
