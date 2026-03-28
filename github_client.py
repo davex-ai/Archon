@@ -167,13 +167,19 @@ def classify_file(path):
         return "config"
     return "other"
 
+def filter_chunks(chunks):
+    return [
+        c for c in chunks
+        if len(c.strip()) > 50 and "import" in c or "function" in c or "class" in c
+    ]
+
 def summarize_chunks(processed_files):
     summaries = []
 
     for file in processed_files:
         chunk_summaries = []
 
-        for chunk in file["chunks"]:
+        for chunk in filter_chunks(file["chunks"]):
             chunk_summaries.append(f"Summary of: {chunk[:100]}")
 
         file_summary = " ".join(chunk_summaries)
@@ -229,6 +235,13 @@ def extract_signals(file_summaries):
 
     return signals
 
+def build_retrieval_query():
+    return """
+core architecture system design scalability performance
+state management data flow backend logic frontend interaction
+real-time communication concurrency bottlenecks tradeoffs
+"""
+
 def build_chunk_prompt(chunk):
     return f"""
 You are a senior engineer analyzing a codebase.
@@ -273,7 +286,7 @@ embeddings = [
 ]
 
 def retrieve(query_vector, embeddings, top_k=5):
-    scores = []
+    scored = []
 
     for item in embeddings:
         score = cosine_similarity(
@@ -281,10 +294,11 @@ def retrieve(query_vector, embeddings, top_k=5):
             [item["vector"]]
         )[0][0]
 
-        scores.append((score, item["chunk"]))
+        scored.append((score, item))
 
-    scores.sort(reverse=True)
-    return [chunk for _, chunk in scores[:top_k]]
+    scored = sorted(scored, key=lambda x: x[0], reverse=True)
+
+    return [item["chunk"] for _, item in scored[:top_k]]
 
 def build_embeddings(processed_files):
     index = []
@@ -300,6 +314,12 @@ def build_embeddings(processed_files):
             })
 
     return index
+
+def format_context(chunks):
+    return "\n\n".join([
+        f"[CODE CHUNK]\n{chunk[:800]}"
+        for chunk in chunks
+    ])
 
 
 def generate_questions_from_repo(repo_url, num_questions=5):
@@ -320,7 +340,7 @@ def generate_questions_from_repo(repo_url, num_questions=5):
     top_chunks = retrieve(query_vector, embedding_index, top_k=8)
 
     # 6. Build context
-    context = "\n\n".join(top_chunks)
+    context = format_context(top_chunks)
 
     # 7. Build final prompt
     prompt = f"""
@@ -348,3 +368,13 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 
 def embed_text(text):
     return model.encode(text)
+
+repo_cache = {}
+
+def get_or_create_embeddings(repo_url, processed):
+    if repo_url in repo_cache:
+        return repo_cache[repo_url]
+
+    embeddings = build_embeddings(processed)
+    repo_cache[repo_url] = embeddings
+    return embeddings
