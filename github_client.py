@@ -127,3 +127,35 @@ def prioritize_files(files):
 
 def chunk_text(text, size=1000):
     return [text[i:i+size] for i in range(0, len(text), size)]
+
+def process_files(files):
+    processed = []
+
+    for file in files:
+        chunks = chunk_text(file["content"], size=1000)
+
+        processed.append({
+            "path": file["path"],
+            "chunks": chunks
+        })
+
+    return processed
+
+def summarize_chunks(processed_files):
+    summaries = []
+
+    for file in processed_files:
+        chunk_summaries = []
+
+        for chunk in file["chunks"]:
+            # placeholder (LLM later)
+            chunk_summaries.append(f"Summary of: {chunk[:100]}")
+
+        file_summary = " ".join(chunk_summaries)
+
+        summaries.append({
+            "path": file["path"],
+            "summary": file_summary
+        })
+
+    return summaries
