@@ -2,6 +2,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from fake_ai import generate_mock_questions
 from github_client import  generate_questions_from_repo
 
 app = FastAPI()
@@ -27,9 +28,9 @@ def analyze_repo(data: RepoRequest):
         return {
             "repo": data.repo_url,
             "questions_requested": data.num_questions,
-            "result": result
+            "mode": result["mode"],
+            "result": result["data"]
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
+        raise (HTTPException(status_code=500, detail=str(e)))
