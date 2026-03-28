@@ -37,6 +37,15 @@ ALLOWED_EXTENSIONS = (
     ".txt", ".rst", ".pdf", ".lock", ".gitignore", ".gitattributes"
 )
 
+IMPORTANT_FILES = [
+    "server/",
+    "src/",
+    "app/",
+    "index",
+    "main",
+    "api",
+]
+
 def filter_files(tree):
     return [
         file for file in tree
@@ -89,14 +98,32 @@ def fetch_repo_contents(repo_url):
 
     results = []
 
-    for file in files[:50]:  # LIMIT for now (important)
+    for file in prioritize_files(files)[:20]:  # LIMIT for now (important)
         content = get_file_content(owner, repo, file["path"])
 
         if content:
             results.append({
                 "path": file["path"],
-                "content": content[:5000]  # prevent overload
+                "content": content[:5000]
             })
 
 
     return results
+def score_file(path):
+    score = 0
+
+    if "README" in path:
+        score += 3
+    if any(key in path.lower() for key in IMPORTANT_FILES):
+        score += 5
+    if path.endswith((".js", ".ts", ".py")):
+        score += 4
+
+    return score
+
+
+def prioritize_files(files):
+    return sorted(files, key=lambda f: score_file(f["path"]), reverse=True)
+
+def chunk_text(text, size=1000):
+    return [text[i:i+size] for i in range(0, len(text), size)]
