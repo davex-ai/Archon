@@ -74,9 +74,9 @@ export default function RepoInterviewer() {
         </div>
 
         <h1>
-          Repo <span className="accent">Interview</span>
+          AR <span className="accent">CH</span>
           <br />
-          <span className="accent-teal">Generator</span>
+          <span className="accent-teal">ON</span>
         </h1>
 
         <p className="subtitle">
