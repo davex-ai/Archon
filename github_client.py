@@ -32,9 +32,7 @@ ALLOWED_EXTENSIONS = (
     ".html", ".htm", ".css", ".scss", ".sass", ".less",
     ".csv", ".sql", ".xml", ".sh", ".bash", ".bat", ".ps1", ".ipynb",
     ".php", ".rb", ".java", ".go", ".cs", ".scala", ".kt", ".kts", ".ex", ".exs",
-    ".swift", ".m", ".mm", ".dart",
-    # Documentation & Meta
-    ".txt", ".rst", ".pdf", ".lock", ".gitignore", ".gitattributes"
+    ".swift", ".m", ".mm", ".dart", ".rst", ".gitattributes"
 )
 
 IMPORTANT_FILES = [
@@ -104,7 +102,7 @@ def fetch_repo_contents(repo_url):
         if content:
             results.append({
                 "path": file["path"],
-                "content": content[:5000]
+                "content": content
             })
 
 
@@ -116,7 +114,7 @@ def score_file(path):
         score += 3
     if any(key in path.lower() for key in IMPORTANT_FILES):
         score += 5
-    if path.endswith((".js", ".ts", ".py")):
+    if path.endswith((".js", ".ts", ".py", ".java", ".jsx", ".c")):
         score += 4
 
     return score
@@ -126,7 +124,24 @@ def prioritize_files(files):
     return sorted(files, key=lambda f: score_file(f["path"]), reverse=True)
 
 def chunk_text(text, size=1000):
-    return [text[i:i+size] for i in range(0, len(text), size)]
+    lines = text.split("\n")
+    chunks = []
+    current = []
+
+    current_len = 0
+
+    for line in lines:
+        current.append(line)
+        current_len += len(line)
+
+        if current_len >= size:
+            chunks.append("\n".join(current))
+            current = []
+            current_len = 0
+
+    if current:
+        chunks.append("\n".join(current))
+    return chunks
 
 def process_files(files):
     processed = []
@@ -140,6 +155,15 @@ def process_files(files):
         })
 
     return processed
+
+def classify_file(path):
+    if "server" in path or path.endswith(".py") or path.endswith(".js"):
+        return "backend"
+    if "client" in path or path.endswith(".jsx"):
+        return "frontend"
+    if "config" in path or path.endswith(".json"):
+        return "config"
+    return "other"
 
 def summarize_chunks(processed_files):
     summaries = []
@@ -166,3 +190,59 @@ def build_repo_summary(file_summaries):
     )
 
     return combined[:10000]
+
+def extract_signals(file_summaries):
+    signals = {
+        "realtime": False,
+        "websocket": False,
+        "state_management": False,
+        "api": False,
+    }
+
+    for f in file_summaries:
+        text = f["summary"].lower()
+
+        if "websocket" in text:
+            signals["websocket"] = True
+        if "cursor" in text or "real-time" in text:
+            signals["realtime"] = True
+        if "state" in text:
+            signals["state_management"] = True
+        if "api" in text:
+            signals["api"] = True
+
+    return signals
+
+def build_chunk_prompt(chunk):
+    return f"""
+You are a senior engineer analyzing a codebase.
+
+Analyze this code chunk:
+{chunk}
+
+Return:
+- What it does
+- Key logic
+- Any design decisions
+"""
+
+def build_question_prompt(repo_summary, num_questions):
+    return f"""
+You are a senior software engineer conducting a deep technical interview.
+
+Based on this repository:
+
+{repo_summary}
+
+Generate {num_questions} challenging interview questions and strong answers.
+
+Focus on:
+- architecture
+- scalability
+- tradeoffs
+- real-world engineering concerns
+
+Format:
+Q1:
+A1:
+"""
