@@ -173,86 +173,12 @@ def filter_chunks(chunks):
         if len(c.strip()) > 50 and "import" in c or "function" in c or "class" in c
     ]
 
-def summarize_chunks(processed_files):
-    summaries = []
-
-    for file in processed_files:
-        chunk_summaries = []
-
-        for chunk in filter_chunks(file["chunks"]):
-            chunk_summaries.append(f"Summary of: {chunk[:100]}")
-
-        file_summary = " ".join(chunk_summaries)
-
-        summaries.append({
-            "path": file["path"],
-            "summary": file_summary
-        })
-
-    return summaries
-
-def summarize_file(file):
-    combined = "\n".join(file["chunks"])[:3000]
-
-    return f"""
-Summarize this file:
-
-{combined}
-
-Focus on:
-- purpose
-- key logic
-- role in system
-"""
-
-def build_repo_summary(file_summaries):
-    combined = "\n".join(
-        f"{f['path']}:\n{f['summary']}"
-        for f in file_summaries
-    )
-
-    return combined[:10000]
-
-def extract_signals(file_summaries):
-    signals = {
-        "realtime": False,
-        "websocket": False,
-        "state_management": False,
-        "api": False,
-    }
-
-    for f in file_summaries:
-        text = f["summary"].lower()
-
-        if "websocket" in text:
-            signals["websocket"] = True
-        if "cursor" in text or "real-time" in text:
-            signals["realtime"] = True
-        if "state" in text:
-            signals["state_management"] = True
-        if "api" in text:
-            signals["api"] = True
-
-    return signals
 
 def build_retrieval_query():
     return """
 core architecture system design scalability performance
 state management data flow backend logic frontend interaction
 real-time communication concurrency bottlenecks tradeoffs
-"""
-
-def build_chunk_prompt(chunk):
-    return f"""
-You are a senior engineer analyzing a codebase.
-
-Analyze this code chunk:
-{chunk}
-
-Return:
-- What it does
-- Key logic
-- Any design decisions
 """
 
 def build_question_prompt(repo_summary, signals, num_questions):
@@ -317,8 +243,8 @@ def build_embeddings(processed_files):
 
 def format_context(chunks):
     return "\n\n".join([
-        f"[CODE CHUNK]\n{chunk[:800]}"
-        for chunk in chunks
+         f"[FILE: {c['path']}]\n{c['chunk'][:800]}"
+        for c in chunks
     ])
 
 
