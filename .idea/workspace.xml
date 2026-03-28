@@ -113,7 +113,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774687112865</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="signals and prompts">
+      <option name="closed" value="true" />
+      <created>1774691154359</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1774691154359</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -122,6 +130,7 @@
     <MESSAGE value="chunking and sorting" />
     <MESSAGE value="prcessing and chunking" />
     <MESSAGE value="summarzin" />
-    <option name="LAST_COMMIT_MESSAGE" value="summarzin" />
+    <MESSAGE value="signals and prompts" />
+    <option name="LAST_COMMIT_MESSAGE" value="signals and prompts" />
   </component>
 </project>

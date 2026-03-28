@@ -183,6 +183,41 @@ def summarize_chunks(processed_files):
         })
 
     return summaries
+
+def summarize_file(file):
+    combined = "\n".join(file["chunks"])[:3000]
+
+    return f"""
+Summarize this file:
+
+{combined}
+
+Focus on:
+- purpose
+- key logic
+- role in system
+"""
+
+def build_question_prompt(repo_summary, signals, num_questions):
+    return f"""
+You are a senior software engineer conducting a deep technical interview.
+
+Repository Summary:
+{repo_summary}
+
+Detected System Signals:
+{signals}
+
+Generate {num_questions} deep interview questions and strong answers.
+
+Focus on:
+- architecture decisions
+- scalability challenges
+- tradeoffs (e.g. WebSockets vs polling)
+- real-world engineering issues
+
+Avoid generic questions.
+"""
 def build_repo_summary(file_summaries):
     combined = "\n".join(
         f"{f['path']}:\n{f['summary']}"
@@ -226,22 +261,25 @@ Return:
 - Any design decisions
 """
 
-def build_question_prompt(repo_summary, num_questions):
+def build_question_prompt(repo_summary, signals, num_questions):
     return f"""
 You are a senior software engineer conducting a deep technical interview.
 
-Based on this repository:
-
+Repository Summary:
 {repo_summary}
 
-Generate {num_questions} challenging interview questions and strong answers.
+Detected System Signals:
+{signals}
+
+Generate {num_questions} deep interview questions and strong answers.
 
 Focus on:
-- architecture
-- scalability
-- tradeoffs
-- real-world engineering concerns
+- architecture decisions
+- scalability challenges
+- tradeoffs (e.g. WebSockets vs polling)
+- real-world engineering issues
 
+Avoid generic questions.
 Format:
 Q1:
 A1:
