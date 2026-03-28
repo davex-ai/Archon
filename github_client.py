@@ -253,7 +253,7 @@ def format_context(chunks):
     ])
 
 
-def generatuestions_from_repo(repo_url, num_questions=5):
+def generate_questions_from_repo(repo_url, num_questions=5):
     # 1. Fetch
     files = fetch_repo_contents(repo_url)
 

@@ -2,7 +2,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from fake_ai import generate_mock_questions
 from github_client import  generate_questions_from_repo
 
 app = FastAPI()
