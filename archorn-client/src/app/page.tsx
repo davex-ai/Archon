@@ -29,7 +29,7 @@ export default function RepoInterviewer() {
     setRevealed({});
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/analyze", {
+      const res = await fetch("https://davex-ai-archon-backend.hf.space", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repo_url: repoUrl, num_questions: numQuestions }),
