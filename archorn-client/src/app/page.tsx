@@ -189,6 +189,18 @@ export default function RepoInterviewer() {
           </div>
         )}
       </div>
+      <footer style={{
+      marginTop: "40px",
+      padding: "20px",
+      textAlign: "center",
+      color: "#666", // Subtle gray to match dark mode
+      fontSize: "0.85rem",
+      borderTop: "1px solid #222" // Very subtle separator
+    }}>
+      <p>
+        © 2026 Archon • Built by <a href="https://davex-ai.vercel.app"> Dave</a>
+      </p>
+    </footer>
     </>
   );
 }
