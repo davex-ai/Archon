@@ -185,7 +185,7 @@ Built by **Dave** — aspiring systems engineer ⚡
 ## 🎬 Demo
 
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ2Z4b2h3YzJ5dTFoMGN6dGx6eTVjYjZ0d2VtZ2w0N2JkNnR3b2p5ZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/26tn33aiTi1jkl6H6/giphy.gif" width="500" />
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/2b2977cf-758e-4524-990d-42347b9d37cf" />
 </p>
 
 ---
