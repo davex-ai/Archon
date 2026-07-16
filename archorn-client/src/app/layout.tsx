@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,14 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* We place the Metrixis tracker here inside the <head> */}
+        <Script
+          src="https://cdn.metrixis.io/tracker.js"
+          data-tracking-key="mtx_329dc8018b8f4a299c43b25ab413fd12"
+          strategy="afterInteractive"
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
