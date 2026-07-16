@@ -31,7 +31,7 @@ export default function RootLayout({
       <head>
         {/* We place the Metrixis tracker here inside the <head> */}
         <Script
-          src="https://cdn.metrixis.io/tracker.js"
+          src="https://localhost:8000/tracker.js"
           data-tracking-key="mtx_329dc8018b8f4a299c43b25ab413fd12"
           strategy="afterInteractive"
         />
