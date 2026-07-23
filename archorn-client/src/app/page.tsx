@@ -106,7 +106,7 @@ export default function RepoInterviewer() {
                 onChange={(e) => setNumQuestions(Number(e.target.value))}
               />
             </div>
-            <button className="btn" onClick={handleSubmit} disabled={loading || !repoUrl.trim()}>
+            <button data-track="ask_questions" className="btn" onClick={handleSubmit} disabled={loading || !repoUrl.trim()}>
               {loading ? (
                 <>
                   <span className="spinner" /> Analyzing…
