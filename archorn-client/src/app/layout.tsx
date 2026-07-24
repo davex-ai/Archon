@@ -31,7 +31,7 @@ export default function RootLayout({
       <head>
         {/* We place the Metrixis tracker here inside the <head> */}
         <Script
-          src="http://metrixis.onrender.com/tracker.js"
+          src="https://metrixis.onrender.com/tracker.js"
           data-site="mtx_7047e220703abbce6b5f008f"
           strategy="afterInteractive"
         />
