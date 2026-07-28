@@ -43,8 +43,9 @@ export default function RepoInterviewer() {
       const data: ApiResponse = await res.json();
       setResponse(data);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Unknown error");
-    } finally {
+  console.error(e); 
+  setError("Something went wrong generating questions. Please try again in a moment.");
+} finally {
       setLoading(false);
     }
   };
