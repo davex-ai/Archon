@@ -10,6 +10,7 @@ type ApiResponse = {
   repo: string;
   questions_requested: number;
   mode?: string;
+  fallback_reason?: string | null;
   result: QA[];
 };
 
@@ -41,6 +42,9 @@ export default function RepoInterviewer() {
       }
 
       const data: ApiResponse = await res.json();
+      if (data.mode === "mock") {
+        console.warn(`[Archon] Mock questions used. Reason: ${data.fallback_reason ?? "unknown"}`);
+      }
       setResponse(data);
     } catch (e: unknown) {
   console.error(e); 
